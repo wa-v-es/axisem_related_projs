@@ -80,7 +80,7 @@ def read_element_output(data_dir, load_wave_data=True):
 
 
 # data dir
-data_dir = './output/elements/orthogonal_azimuthal_slices'
+data_dir = 'simu1D/output/elements/orthogonal_azimuthal_slices'
 
 # read
 na_grid, data_time, list_element_na, list_element_coords, \
