@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 # load_wave_data=True:  read wave data and return numpy.ndarray
 # load_wave_data=False: do not read wave data and return xarray.DataArray (use False if data is big)
 
-def read_element_output(data_dir, load_wave_data=True):
+def read_element_output(data_dir, load_wave_data=False):
     ################ open files ################
     # filenames
     nc_fnames = [f for f in os.listdir(data_dir) if 'axisem3d_synthetics.nc' in f]
@@ -75,12 +75,8 @@ def read_element_output(data_dir, load_wave_data=True):
 
 
 
-
-
-
-
 # data dir
-data_dir = 'simu1D/output/elements/orthogonal_azimuthal_slices'
+data_dir = 'simu1D/output_lat_30'
 
 # read
 na_grid, data_time, list_element_na, list_element_coords, \
