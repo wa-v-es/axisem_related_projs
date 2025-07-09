@@ -1,6 +1,6 @@
 # originally from https://github.com/AxiSEMunity/AxiSEM3D/blob/master/examples/04_simple_3d_shapes/Example_4_README.ipynb
 ## The plume tail axis at [0, 0] in coordinates and a depth from 1000 km to 3000 km.
-# The plume head is a sphere (ellipsoid) of radius 500 km centred at a depth of 1200 km.
+# The plume head is a sphere (ellipsoid) of radius 500 km centred at a depth of 500 km.
 #The Vp, Vs and density perturbation will all be - 10 %.
 import sys
 
@@ -15,24 +15,24 @@ import netCDF4 as nc
 
 
 # We dont need to make a model that spans the whole domain, just the part we are interested in injecting a plume in:
-radius = 4000000
+radius = 2800000
 perturb = -0.1
 lat_lim = [-50, 50]
 long_lim = [-50, 50]
 depth_lim = [0, radius]
 
 # Set locations for shapes:
-ell_loc = [0,0, 500000] # orignally was 1200km.
-cyl_loc = [0,0, 2500000]
+ell_loc = [0,0, 400000] # orignally was 1200km.
+cyl_loc = [0,0, 2200000]
 # sys.exit()
 # Create our global model:
 glob_m = Model("spherical", lat_lim, long_lim, depth_lim, elements_per_wavelength=1, dominant_freq=.5, min_velocity=10000, oversaturation=1, a=radius)
 
 # Create cylinder:
-cylinder = Cylinder(model=glob_m, vp=perturb, vs=perturb, rho=perturb, dim=[3000000, 150000, 0, 0, 1], loc=cyl_loc, major_axis='Z')
+cylinder = Cylinder(model=glob_m, vp=perturb, vs=perturb, rho=perturb, dim=[2800000, 200000, 0, 0, 1], loc=cyl_loc, major_axis='Z')
 
 # Create ellipse:
-ellipse = Ellipsoid(model=glob_m, vp=perturb, vs=perturb, rho=perturb, dim=[500000, 500000, 500000, np.pi/2, 0, 1], loc=ell_loc)
+ellipse = Ellipsoid(model=glob_m, vp=perturb, vs=perturb, rho=perturb, dim=[400000, 400000, 400000, np.pi/2, 0, 1], loc=ell_loc)
 
 # Create injector object and inject
 i = Injector(glob_m)
@@ -47,7 +47,7 @@ glob_m.bm_vs =  sci.gaussian_filter(input=glob_m.bm_vs, sigma=sigma)
 
 # Write to NetCDF file
 out_path = f"plume_{sigma}"
-glob_m.writeNetCDF(f"{out_path}.nc")
+glob_m.writeNetCDF(f"{out_path}mantle.nc")
 
 
-glob_m.writeNetCDF(f"{out_path}_visual.nc", paraview=True)
+glob_m.writeNetCDF(f"{out_path}mantle_visual.nc", paraview=True)
