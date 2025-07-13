@@ -21,7 +21,7 @@ input_dir='/Users/keyser/Research/axisem_related_projs/plumes/input'
 info_arr = np.loadtxt(input_dir+'/stations_new.txt', dtype=str, skiprows=3)
 
 # st_dir = '/Users/keyser/Research/axisem/loyalty_isl/output_10sec_2HD/stations/AK_81'
-st_dir = '/Users/keyser/Research/axisem_related_projs/plumes/output/stations/100KM_sts'
+st_dir = '/Users/keyser/Research/axisem_related_projs/plumes/output_20sec/stations/100KM_sts'
 
 ####
 
@@ -64,26 +64,28 @@ print('Saving to SAC...')
 for ist, st in enumerate(info_arr):
     print('%d / %d' % (ist + 1, len(info_arr)), end='\r')
     # get PP arrival
-    # model = TauPyModel(model="ak135")
-    # dist=calc_dist(event_latlon[0],event_latlon[1],float(st[2]),float(st[3]),6400,0)
+    model = TauPyModel(model="iasp91")
+    dist=calc_dist(event_latlon[0],event_latlon[1],float(st[2]),float(st[3]),6400,0)
+    if dist<10:
+        continue
     dist_azi_bazi=calc_dist_azi(event_latlon[0],event_latlon[1],float(st[2]),float(st[3]),6400,0)
     #
     # arrivals = model.get_travel_times(source_depth_in_km=float(event_depth)/1000,distance_in_degree=dist,phase_list=["PP"])
     # arr_PP=arrivals[0]
-    # try:
-    #     arr_pP=model.get_travel_times(source_depth_in_km=float(event_depth)/1000,distance_in_degree=dist,phase_list=["pP"])[0]
-    # except:
-    #     print('no pP :/')
-    # arris_P = model.get_travel_times(source_depth_in_km=float(event_depth)/1000,distance_in_degree=dist,phase_list=["P"])
-    # try:
-    #     arr_P=arris_P[0]
-    # except:
-    #     print('no P')
-    # starttime=stats.starttime+arr_PP.time-400
-    # endtime=stats.starttime+arr_PP.time+200
+    try:
+        arr_pP=model.get_travel_times(source_depth_in_km=float(event_depth)/1000,distance_in_degree=dist,phase_list=["pP"])[0]
+    except:
+        print('no pP :/')
+    arris_P = model.get_travel_times(source_depth_in_km=float(event_depth)/1000,distance_in_degree=dist,phase_list=["P"])
+    try:
+        arr_P=arris_P[0]
+    except:
+        print('no P')
+    starttime=stats.starttime+arr_P.time-30
+    endtime=stats.starttime+arr_P.time+100
     # sys.exit()
     # sac header
-    sac_header['b'] = 0
+    sac_header['b'] = arr_P.time-30
     sac_header['kstnm'] = st[0]
     sac_header['knetwk'] = st[1]
     sac_header['stla'] = float(st[2])
@@ -108,9 +110,9 @@ for ist, st in enumerate(info_arr):
         stats.channel= ch
         # create and process trace
         tr = Trace(data=disp[:, ich], header=stats)
-        tr.filter('bandpass',freqmin=.05,freqmax=.5)
+        tr.filter('bandpass',freqmin=.01,freqmax=5)
         # tr.resample(20.)
-        # tr.trim(starttime,endtime)
+        tr.trim(starttime,endtime)
         # tr = tr.slice(UTCDateTime(0.), UTCDateTime(1800.))
         # create sac from trace
         sac = SACTrace.from_obspy_trace(tr)
@@ -139,7 +141,7 @@ sys.exit()
 # plot
 
 ##
-model = TauPyModel(model="ak135")
+model = TauPyModel(model="iasp91")
 # dist_azi_bazi=calc_dist_azi(-21.19,170.27,61.1416, -148.1751,6400,0)
 print(dist_azi_bazi)
 arrivals = model.get_travel_times(source_depth_in_km=float(event_depth)/1000,distance_in_degree=dist,phase_list=['P','pP','sP',"PP"])
