@@ -21,7 +21,7 @@ input_dir='/Users/keyser/Research/axisem_related_projs/plumes/input'
 info_arr = np.loadtxt(input_dir+'/stations_new.txt', dtype=str, skiprows=3)
 
 # st_dir = '/Users/keyser/Research/axisem/loyalty_isl/output_10sec_2HD/stations/AK_81'
-st_dir = '/Users/keyser/Research/axisem_related_projs/plumes/output_20sec/stations/100KM_sts'
+st_dir = '/Users/keyser/Research/axisem_related_projs/plumes/output_10sec/stations/100KM_sts'
 
 ####
 
@@ -42,7 +42,7 @@ time = np.loadtxt(st_dir + '/data_time.ascii')
 
 # create dir
 os.makedirs(st_dir + '/sac_bf', exist_ok=True)
-# os.makedirs(st_dir + '/sac_bf_noise', exist_ok=True)
+os.makedirs(st_dir + '/sac_bf_noise', exist_ok=True)
 
 # trace header
 stats = Stats()
@@ -59,14 +59,17 @@ sac_header['evdp'] = float(event_depth)
 ###
 # sys.exit()
 # loop over stations
-add_noise=False
+add_noise=True
 print('Saving to SAC...')
 for ist, st in enumerate(info_arr):
+    # if
     print('%d / %d' % (ist + 1, len(info_arr)), end='\r')
     # get PP arrival
     model = TauPyModel(model="iasp91")
     dist=calc_dist(event_latlon[0],event_latlon[1],float(st[2]),float(st[3]),6400,0)
-    if dist<10:
+    # sys.exit()
+    if st[0][0] > 'H' or int(st[0][1:]) > 181:
+    # if dist<40 or dist > 60:
         continue
     dist_azi_bazi=calc_dist_azi(event_latlon[0],event_latlon[1],float(st[2]),float(st[3]),6400,0)
     #
@@ -81,11 +84,12 @@ for ist, st in enumerate(info_arr):
         arr_P=arris_P[0]
     except:
         print('no P')
-    starttime=stats.starttime+arr_P.time-30
-    endtime=stats.starttime+arr_P.time+100
+
+    starttime=stats.starttime+arr_P.time-50
+    endtime=stats.starttime+arr_P.time+250
     # sys.exit()
     # sac header
-    sac_header['b'] = arr_P.time-30
+    sac_header['b'] = arr_P.time-50
     sac_header['kstnm'] = st[0]
     sac_header['knetwk'] = st[1]
     sac_header['stla'] = float(st[2])
@@ -111,8 +115,12 @@ for ist, st in enumerate(info_arr):
         # create and process trace
         tr = Trace(data=disp[:, ich], header=stats)
         tr.filter('bandpass',freqmin=.01,freqmax=5)
-        # tr.resample(20.)
+        tr.resample(20.)
         tr.trim(starttime,endtime)
+
+        tr.stats.starttime=tr.stats.starttime+10 # coz there is a 10 sec delay????!!!!!!!!!!!
+        # tr.stats.endtime=tr.stats.endtime+10
+
         # tr = tr.slice(UTCDateTime(0.), UTCDateTime(1800.))
         # create sac from trace
         sac = SACTrace.from_obspy_trace(tr)

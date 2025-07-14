@@ -29,10 +29,10 @@ cyl_loc = [0,0, 2200000]
 glob_m = Model("spherical", lat_lim, long_lim, depth_lim, elements_per_wavelength=1, dominant_freq=.5, min_velocity=10000, oversaturation=1, a=radius)
 
 # Create cylinder:
-cylinder = Cylinder(model=glob_m, vp=perturb, vs=perturb, rho=perturb, dim=[2800000, 200000, 0, 0, 1], loc=cyl_loc, major_axis='Z')
+cylinder = Cylinder(model=glob_m, vp=perturb, vs=perturb, rho=perturb, dim=[2500000, 300000, 0, 0, 1], loc=cyl_loc, major_axis='Z')
 
 # Create ellipse:
-ellipse = Ellipsoid(model=glob_m, vp=perturb, vs=perturb, rho=perturb, dim=[400000, 400000, 400000, np.pi/2, 0, 1], loc=ell_loc)
+ellipse = Ellipsoid(model=glob_m, vp=perturb, vs=perturb, rho=perturb, dim=[500000, 500000, 500000, np.pi/2, 0, 1], loc=ell_loc)
 
 # Create injector object and inject
 i = Injector(glob_m)
