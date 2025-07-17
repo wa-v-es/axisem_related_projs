@@ -1,0 +1,7 @@
+*.nc
+*.jpg
+*.png
+*.pdf
+moho_3d/
+*.yaml
+*.txt
