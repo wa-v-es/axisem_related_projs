@@ -16,14 +16,16 @@ from obspy.io.sac import SACTrace
 ###
 # read event location
 input_dir='/Users/keyser/Research/axisem_related_projs/plumes/input'
-input_dir='/Users/keyser/Research/axisem_related_projs/plumes/output_10sec_new/input'
+input_dir='/Users/keyser/Research/axisem_related_projs/plumes/no_plume_10sec/input'
 
 
 
 info_arr = np.loadtxt(input_dir+'/grid_stations.txt', dtype=str, skiprows=3)
 
 # st_dir = '/Users/keyser/Research/axisem/loyalty_isl/output_10sec_2HD/stations/AK_81'
-st_dir = '/Users/keyser/Research/axisem_related_projs/plumes/output_10sec_new/stations/100KM_sts'
+st_dir = '/Users/keyser/Research/axisem_related_projs/plumes/output_10sec_new_source/stations/100KM_sts'
+# st_dir = '/Users/keyser/Research/axisem_related_projs/plumes/no_plume_10sec/output/stations/no_plume'
+
 
 ####
 
@@ -126,7 +128,8 @@ for ist, st in enumerate(info_arr):
         # tr = tr.slice(UTCDateTime(0.), UTCDateTime(1800.))
         # create sac from trace
         sac = SACTrace.from_obspy_trace(tr)
-        sac.write(st_dir + '/sac_bf/%s.%s.%s.sac' % (st[1], st[0], ch))
+        st_temp = st[0].replace('la', 'L').replace('lo', 'L')
+        sac.write(st_dir + '/sac_bf/%s.%s.%s.sac' % (st[1], st_temp, ch))
 
         if add_noise:
             max_amplitude = np.max(np.abs(tr.data))
@@ -137,7 +140,9 @@ for ist, st in enumerate(info_arr):
             # Add the noise to the trace
             tr.data += noise
             sac = SACTrace.from_obspy_trace(tr)
-            sac.write(st_dir + '/sac_bf_noise/%s.%s.%s.sac' % (st[1], st[0], ch))
+            st_temp = st[0].replace('la', 'L').replace('lo', 'L')
+
+            sac.write(st_dir + '/sac_bf_noise/%s.%s.%s.sac' % (st[1], st_temp, ch))
 
     # sys.exit()
 print('Done with %d stations.' % len(info_arr))
