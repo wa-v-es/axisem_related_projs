@@ -76,7 +76,7 @@ def read_element_output(data_dir, load_wave_data=False):
 
 
 # data dir
-data_dir = 'simu1D/output_lat_30'
+data_dir = 'output_10sec/elements/orthogonal_azimuthal_slices'
 
 # read
 na_grid, data_time, list_element_na, list_element_coords, \

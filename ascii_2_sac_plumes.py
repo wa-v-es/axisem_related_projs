@@ -16,12 +16,14 @@ from obspy.io.sac import SACTrace
 ###
 # read event location
 input_dir='/Users/keyser/Research/axisem_related_projs/plumes/input'
+input_dir='/Users/keyser/Research/axisem_related_projs/plumes/output_10sec_new/input'
 
 
-info_arr = np.loadtxt(input_dir+'/stations_new.txt', dtype=str, skiprows=3)
+
+info_arr = np.loadtxt(input_dir+'/grid_stations.txt', dtype=str, skiprows=3)
 
 # st_dir = '/Users/keyser/Research/axisem/loyalty_isl/output_10sec_2HD/stations/AK_81'
-st_dir = '/Users/keyser/Research/axisem_related_projs/plumes/output_10sec/stations/100KM_sts'
+st_dir = '/Users/keyser/Research/axisem_related_projs/plumes/output_10sec_new/stations/100KM_sts'
 
 ####
 
@@ -68,9 +70,9 @@ for ist, st in enumerate(info_arr):
     model = TauPyModel(model="iasp91")
     dist=calc_dist(event_latlon[0],event_latlon[1],float(st[2]),float(st[3]),6400,0)
     # sys.exit()
-    if st[0][0] > 'H' or int(st[0][1:]) > 181:
+    # if st[0][0] > 'H' or int(st[0][1:]) > 181:
     # if dist<40 or dist > 60:
-        continue
+        # continue
     dist_azi_bazi=calc_dist_azi(event_latlon[0],event_latlon[1],float(st[2]),float(st[3]),6400,0)
     #
     # arrivals = model.get_travel_times(source_depth_in_km=float(event_depth)/1000,distance_in_degree=dist,phase_list=["PP"])
@@ -85,11 +87,11 @@ for ist, st in enumerate(info_arr):
     except:
         print('no P')
 
-    starttime=stats.starttime+arr_P.time-50
+    starttime=stats.starttime+arr_P.time-60
     endtime=stats.starttime+arr_P.time+250
     # sys.exit()
     # sac header
-    sac_header['b'] = arr_P.time-50
+    sac_header['b'] = arr_P.time-60
     sac_header['kstnm'] = st[0]
     sac_header['knetwk'] = st[1]
     sac_header['stla'] = float(st[2])
@@ -118,7 +120,7 @@ for ist, st in enumerate(info_arr):
         tr.resample(20.)
         tr.trim(starttime,endtime)
 
-        tr.stats.starttime=tr.stats.starttime+10 # coz there is a 10 sec delay????!!!!!!!!!!!
+        # tr.stats.starttime=tr.stats.starttime+10 # coz there is a 10 sec delay????!!!!!!!!!!!
         # tr.stats.endtime=tr.stats.endtime+10
 
         # tr = tr.slice(UTCDateTime(0.), UTCDateTime(1800.))

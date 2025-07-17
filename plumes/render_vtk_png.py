@@ -1,9 +1,22 @@
+# run this through terminal
+# pvbatch render_vtk_png.py
 from paraview.simple import *
 import os
+import sys
 
+reader = LegacyVTKReader(FileNames=["output_10sec/elements/orthogonal_azimuthal_slices/vtk/slice1/wave100.vtk"])
+Show(reader)
+Render()
+data = servermanager.Fetch(reader)
+
+# List point and cell data arrays
+print("Point data arrays:", [data.GetPointData().GetArrayName(i) for i in range(data.GetPointData().GetNumberOfArrays())])
+print("Cell data arrays:", [data.GetCellData().GetArrayName(i) for i in range(data.GetCellData().GetNumberOfArrays())])
+
+sys.exit()
 # Set input/output directories
-vtk_dir = "simu1D/output_lat_30/vtk_pngs/slice1"
-output_dir = "simu1D/output_lat_30/vtk_pngs/slice1"
+vtk_dir = "output_10sec/elements/orthogonal_azimuthal_slices/vtk/slice1"
+output_dir = "output_10sec/elements/orthogonal_azimuthal_slices/vtk_pngs/slice1"
 os.makedirs(output_dir, exist_ok=True)
 
 # Get and sort .vtk files
@@ -30,13 +43,5 @@ for i, filename in enumerate(vtk_files):
     SaveScreenshot(os.path.join(output_dir, f"frame_{i:04d}.png"), view)
     print(f"Saved frame_{i:04d}.png")
 
-
+sys.exit()
 #
-reader = LegacyVTKReader(FileNames=["simu1D/output_lat_30/vtk_pngs/slice1/wave100.vtk"])
-Show(reader)
-Render()
-data = servermanager.Fetch(reader)
-
-# List point and cell data arrays
-print("Point data arrays:", [data.GetPointData().GetArrayName(i) for i in range(data.GetPointData().GetNumberOfArrays())])
-print("Cell data arrays:", [data.GetCellData().GetArrayName(i) for i in range(data.GetCellData().GetNumberOfArrays())])
