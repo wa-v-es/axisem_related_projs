@@ -40,13 +40,13 @@ no_plume_all=Stream()
 # row 2 is lat. row 3 is long.
 stations_subset = np.array([
     row for row in info_5deg
-    if -3 <= float(row[2]) <= 3 and 4 <= float(row[3]) <= 11
+    if -3 <= float(row[2]) <= 3 and 6 <= float(row[3]) <= 15 and float(row[2])!=0
 ])
 
 for row in stations_subset:
     row[0] = row[0].replace('la', 'L').replace('lo', 'L')
-# len(stations_subset)
-print(stations_subset)
+print('lenth of stations_subset=',len(stations_subset))
+# print(stations_subset)
 # sys.exit()
 for ist, st in enumerate(stations_subset):
     print('%d / %d' % (ist + 1, len(info_5deg)), end='\r')
@@ -68,8 +68,8 @@ for ist, st in enumerate(stations_subset):
     arr_P=arrivals[0]
 
     # st_syn.trim(starttime=origin_time+arr_PP.time-400,endtime=origin_time+arr_PP.time+200)
-    no_st_plume.filter('lowpass',freq=.2)
-    st_plume.filter('lowpass',freq=.2)
+    no_st_plume.filter('lowpass',freq=.04)
+    st_plume.filter('lowpass',freq=.04)
     # st_iris[0].data=st_iris[0].data
     stream_both = Stream(traces=[no_st_plume[0], st_plume[0]])
     no_plume_all.append(no_st_plume[0])
@@ -85,7 +85,7 @@ no_plume_all = Stream(sorted(no_plume_all, key=lambda tr: tr.stats.sac['gcarc'])
 plume_all = Stream(sorted(plume_all, key=lambda tr: tr.stats.sac['gcarc']))
 
 #
-fig, ax = plt.subplots(1,3, dpi=150,figsize=(13.5, 7))
+fig, ax = plt.subplots(1,3, dpi=150,figsize=(15.5, 7))
 N_old=0
 origin_time = get_sac_reftime(no_plume_all[0].stats.sac)
 for j in range(3):
@@ -114,7 +114,7 @@ for j in range(3):
         auto=st_temp[i]
         model = TauPyModel(model="ak135")
         # for synthetic, dep is in km. In iris, it is in mt.
-        arrivals = model.get_travel_times(source_depth_in_km=auto.stats.sac['evdp']/1000,distance_in_degree=auto.stats.sac['gcarc'],phase_list=["P"])
+        arrivals = model.get_travel_times(source_depth_in_km=auto.stats.sac['evdp']/1000,distance_in_degree=auto.stats.sac['gcarc'],phase_list=("P","pP","sP",'pS','S'))
         arr_P=arrivals[0]
         # try:
         #     arrivals = model.get_travel_times(source_depth_in_km=auto.stats.sac['evdp']/1000,distance_in_degree=auto.stats.sac['gcarc'],phase_list=["P"])
@@ -124,7 +124,7 @@ for j in range(3):
         # except:
         #     print("P shadow zone reached!\n")
 
-        auto.trim(starttime=origin_time+arr_P.time-20,endtime=origin_time+arr_P.time+160)
+        auto.trim(starttime=origin_time+arr_P.time-20)#,endtime=origin_time+arr_P.time+160)
 
         if auto.stats.npts == 0:
             print('No samples in trace\n')
@@ -134,13 +134,13 @@ for j in range(3):
         # time=time+arr_PP.time-400 # shifts onset to 0 sec
         auto.data /= np.max(np.abs(auto.data))
         l1,=ax[j].plot(time,auto.data + i+1,  lw=0.5, color='teal',label='real')
-
-        # ax[j].scatter(arr_P.time-700, i+1,s=3,marker='o',facecolor='dimgray', edgecolor='black',alpha=.95,linewidth=.15,zorder=10)
+        for arr in arrivals:
+            ax[j].scatter(arr.time - arr_P.time+20, i+1,s=10,marker='o',facecolor='navy', edgecolor='black',alpha=.95,linewidth=.15,zorder=10)
 
         ####
         ##plotting synthetic on top
         auto_s=plume_all.select(station=auto.stats.station)[0]
-        auto_s.trim(starttime=origin_time+arr_P.time-20,endtime=origin_time+arr_P.time+160)
+        auto_s.trim(starttime=origin_time+arr_P.time-20)#,endtime=origin_time+arr_P.time+160)
 
         time_s = np.arange(auto_s.stats.npts) * auto_s.stats.delta
         ### ADDED 10 sec in synthetic!!!!!!
@@ -166,10 +166,10 @@ for j in range(3):
     ax[j].yaxis.set_major_formatter(ticker.FixedFormatter(st_label))
 # ax[1].set_xlabel('Time after eq (s)')
 plt.legend([l1,l2],['No plume','Plume'], loc=[-1,1.02],ncol=3,fontsize=9,handletextpad=.5,borderaxespad=1.5,columnspacing=1)
-fig.text(0.52, 0.03, 'Centered around P-20 lowpass (0.2 Hz)',fontsize=11, ha='center', va='center')
+fig.text(0.52, 0.03, 'Centered around P-20 lowpass (0.04 Hz/25 s)',fontsize=11, ha='center', va='center')
 # plt.show()
 #
-plt.savefig('plume_noPlume_10mesh_Z.png',dpi=300,bbox_inches='tight', pad_inches=0.1)
+# plt.savefig('noise_plume_noPlume_10mesh_Z_25s.png',dpi=300,bbox_inches='tight', pad_inches=0.1)
 sys.exit()
 ############
 
