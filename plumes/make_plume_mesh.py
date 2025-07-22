@@ -23,12 +23,12 @@ depth_lim = [0, radius]
 
 # Set locations for shapes:
 ell_loc = [0,0, 400000] # orignally was 1200km.
-cyl_loc = [0,0, 2200000]
+cyl_loc = [0,0, 2200000] # [x,y,z] of centre of cylinder
 # sys.exit()
 # Create our global model:
 glob_m = Model("spherical", lat_lim, long_lim, depth_lim, elements_per_wavelength=1, dominant_freq=.5, min_velocity=10000, oversaturation=1, a=radius)
 
-# Create cylinder:
+# Create cylinder: [h, rad, theta, phi, expand_int] where h - length of the cylinder, radius of the cylinder, theta and phi are rotation angles away from the major axis.
 cylinder = Cylinder(model=glob_m, vp=perturb, vs=perturb, rho=perturb, dim=[2500000, 300000, 0, 0, 1], loc=cyl_loc, major_axis='Z')
 
 # Create ellipse:

@@ -30,7 +30,7 @@ view.ViewSize = [800, 600]
 view.Background = [1, 1, 1]  # white
 
 # Optional: color by scalar (skip or modify as needed)
-ColorBy(display, ('POINTS', 'your_scalar_name'))
+ColorBy(display, ('POINTS', '???? scalar'))
 
 # Set camera (optional: adjust to fit your data)
 ResetCamera()
