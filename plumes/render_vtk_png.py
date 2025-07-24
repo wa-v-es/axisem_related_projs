@@ -8,12 +8,14 @@ reader = LegacyVTKReader(FileNames=["output_10sec/elements/orthogonal_azimuthal_
 Show(reader)
 Render()
 data = servermanager.Fetch(reader)
+# print('len of data',len(data))
+# print('len of data',len(data.GetPointData().GetNumberOfArrays()))
 
 # List point and cell data arrays
 print("Point data arrays:", [data.GetPointData().GetArrayName(i) for i in range(data.GetPointData().GetNumberOfArrays())])
 print("Cell data arrays:", [data.GetCellData().GetArrayName(i) for i in range(data.GetCellData().GetNumberOfArrays())])
 
-sys.exit()
+# sys.exit()
 # Set input/output directories
 vtk_dir = "output_10sec/elements/orthogonal_azimuthal_slices/vtk/slice1"
 output_dir = "output_10sec/elements/orthogonal_azimuthal_slices/vtk_pngs/slice1"
@@ -30,7 +32,7 @@ view.ViewSize = [800, 600]
 view.Background = [1, 1, 1]  # white
 
 # Optional: color by scalar (skip or modify as needed)
-ColorBy(display, ('POINTS', '???? scalar'))
+ColorBy(display, ('POINTS', 'UZ'))
 
 # Set camera (optional: adjust to fit your data)
 ResetCamera()
