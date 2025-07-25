@@ -64,5 +64,5 @@ ax.scatter(-20, -2, color='firebrick',marker='*', s=150,alpha=.85, transform=ccr
 
 plt.title('Grid Stations')
 plt.legend()
-# plt.savefig('st_grid.png',dpi=300,bbox_inches='tight', pad_inches=0.1)
+# plt.savefig('st_plume_eq.png',dpi=300,bbox_inches='tight', pad_inches=0.1)
 plt.show()

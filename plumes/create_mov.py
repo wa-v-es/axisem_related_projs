@@ -5,7 +5,7 @@ import numpy as np
 from vtk.util import numpy_support
 
 # Directory containing the .vtk files
-vtk_dir = "simu1D/output/elements/orthogonal_azimuthal_slices/vtk/slice2/"  # Change this to your folder path
+vtk_dir = "simu1D/output/elements/orthogonal_azimuthal_slices/vtk/slice2/"
 output_video = "output_slice2.mov"
 frame_rate = 5  # frames per second
 
