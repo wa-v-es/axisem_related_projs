@@ -89,7 +89,10 @@ no_plume_all = Stream(sorted(no_plume_all, key=lambda tr: tr.stats.sac['gcarc'])
 plume_all = Stream(sorted(plume_all, key=lambda tr: tr.stats.sac['gcarc']))
 
 #
-fig, ax = plt.subplots(1,1, dpi=150,figsize=(9, 4))
+plt.ion()
+plt.rcParams['font.size'] = 12
+
+fig, ax = plt.subplots(1,1, dpi=150,figsize=(12, 4))
 
 origin_time = get_sac_reftime(no_plume_all[0].stats.sac)
 
@@ -165,10 +168,12 @@ plt.setp(ax.get_yticklabels(),fontsize=7)
 ax.yaxis.set_major_formatter(ticker.FixedFormatter(st_label))
 
 # ax[1].set_xlabel('Time after eq (s)')
-plt.legend([l1,l2],['No plume','Plume'], loc=[.7,1.02],ncol=3,fontsize=9,handletextpad=.5,borderaxespad=1.5,columnspacing=1)
-fig.text(0.52, 0.03, 'Centered around P-20 lowpass (0.1 Hz )',fontsize=11, ha='center', va='center')
-# plt.show()
+plt.legend([l1,l2],['No plume','Plume'], loc=[.65,1.02],ncol=3,fontsize=12,handletextpad=.5,borderaxespad=1.5,columnspacing=1)
+fig.text(0.42, .92, 'Centered around P-20 lowpass (0.1 Hz )',fontsize=12, ha='center', va='center')
+fig.text(0.5, .01, 'Time (s)',fontsize=12, ha='center', va='center')
+
+plt.show()
 #
-plt.savefig('3seis_noise_plume_noPlume_10mesh_Z_10s.png',dpi=300,bbox_inches='tight', pad_inches=0.1)
+# plt.savefig('3seis_noise_plume_noPlume_10mesh_Z_10s.png',dpi=300,bbox_inches='tight', pad_inches=0.1)
 sys.exit()
 ############
