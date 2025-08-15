@@ -1,12 +1,12 @@
-
+#magick -delay 80 -quiet -quality 50 -loop 0 *.png out.gif
 #pvpython
 from paraview.simple import *
 import os
 import sys
 
 # Filename stuff
-vtk_dir = "../output_10sec/elements/orthogonal_azimuthal_slices/vtk/slice3/"
-output_dir = "../output_10sec/elements/orthogonal_azimuthal_slices/vtk_pngs/slice3/"
+vtk_dir = "../plumes_iaspi91_10sec_new_loc_with_wave/simu1D/output/elements/orthogonal_azimuthal_slices/vtk/slice2/"
+output_dir = "../plumes_iaspi91_10sec_new_loc_with_wave/simu1D/output/elements/orthogonal_azimuthal_slices/vtk_pngs/slice2/"
 os.makedirs(output_dir, exist_ok=True)
 # path_to_vtk  = '/Users/eaton/Downloads/'
 wave_id      = 100
@@ -14,7 +14,9 @@ slicename = f'wave{wave_id}'
 
 # Load the VTK file
 vtk_files = sorted([f for f in os.listdir(vtk_dir) if f.endswith('.vtk')])
-for i, vtk_file in enumerate(vtk_files):
+print(vtk_files[::10])
+# sys.exit()
+for i, vtk_file in enumerate(vtk_files[::15]):
 # for vtk_file in vtk_files:
     outpath = os.path.join(output_dir, f"{vtk_file[:-3]}png")
     wave100vtk = LegacyVTKReader(FileNames=[os.path.join(vtk_dir, vtk_file)])
@@ -29,14 +31,14 @@ for i, vtk_file in enumerate(vtk_files):
     wave100vtkDisplay = Show(wave100vtk, rv, 'UnstructuredGridRepresentation')
 
     # Adjust the camera to be orthogonal to slice
-    # rv.ResetActiveCameraToPositiveY()# slice0
-    rv.ResetActiveCameraToPositiveX()# slice0
+    rv.ResetActiveCameraToPositiveY()# slice0,2
+    # rv.ResetActiveCameraToPositiveX()# slice1,3
 
     rv.ResetCamera(False, 0.9) # slice0
     wave100vtkDisplay = Show(wave100vtk, rv, 'UnstructuredGridRepresentation')
 
     # Change colourbar limits
-    vmax = 1e-8
+    vmax = 5e-9
     vmin = -vmax
     uZLUT = GetColorTransferFunction('UZ')
     uZLUT.RescaleTransferFunction(vmin, vmax)
