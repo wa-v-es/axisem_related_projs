@@ -17,16 +17,17 @@ from obspy.io.sac import SACTrace
 # read event location
 input_dir='/Users/keyser/Research/axisem_related_projs/plumes/input'
 input_dir='/Users/keyser/Research/axisem_related_projs/plumes/no_plume_10sec/input'
-input_dir='/Users/keyser/Research/axisem_related_projs/plumes/plumes_iaspi91_10sec_new_loc/input'
+input_dir='/Users/keyser/Research/axisem_related_projs/plumes/plumes_iaspi91_10sec_new_loc_with_wave/input'
 
-
+#nanvar contains 0N17E 10N13E 10N16E 11N17E 12N17E 1N17E 2N16E 2N17E 2N18E 3N18E 4N17E
+# 5N16E 5N17E 6N15E 6N16E 6N17E 7N15E 7N16E 7N17E 8N15E 9N15E 9N16E
 
 info_arr = np.loadtxt(input_dir+'/grid_stations.txt', dtype=str, skiprows=3)
 
 # st_dir = '/Users/keyser/Research/axisem/loyalty_isl/output_10sec_2HD/stations/AK_81'
 st_dir = '/Users/keyser/Research/axisem_related_projs/plumes/output_10sec_new_source/stations/100KM_sts'
 st_dir = '/Users/keyser/Research/axisem_related_projs/plumes/no_plume_10sec/output/stations/no_plume'
-st_dir = '/Users/keyser/Research/axisem_related_projs/plumes/plumes_iaspi91_10sec_new_loc/simu1D/output/stations/no_plume'
+st_dir = '/Users/keyser/Research/axisem_related_projs/plumes/plumes_iaspi91_10sec_new_loc_with_wave/simu1D/output/stations/plume_2lat'
 
 
 
@@ -68,8 +69,11 @@ sac_header['evdp'] = float(event_depth)
 # loop over stations
 add_noise=True
 print('Saving to SAC...')
+# sys.exit()
+
 for ist, st in enumerate(info_arr):
     # if
+    st_temp = st[0].replace('la', '').replace('lo', '')
     print('%d / %d' % (ist + 1, len(info_arr)), end='\r')
     # get PP arrival
     model = TauPyModel(model="iasp91")
@@ -92,12 +96,14 @@ for ist, st in enumerate(info_arr):
     except:
         print('no P')
 
-    starttime=stats.starttime+arr_P.time-60 #stats.starttime+200
+    # starttime=stats.starttime+arr_P.time-60 #stats.starttime+200
+    starttime=stats.starttime+200 #stats.starttime+200
+
     endtime=stats.endtime
     # sys.exit()
     # sac header
-    sac_header['b'] = arr_P.time-60# 200
-    sac_header['kstnm'] = st[0]
+    sac_header['b'] = 200
+    sac_header['kstnm'] = st_temp
     sac_header['knetwk'] = st[1]
     sac_header['stla'] = float(st[2])
     sac_header['stlo'] = float(st[3])
@@ -114,38 +120,39 @@ for ist, st in enumerate(info_arr):
     # loop over channels
     for ich, ch in enumerate('RTZ'):
         # sac header
+
         sac_header['kcmpnm'] = ch
         # add sac header to trace header
         stats.sac = sac_header
-        stats.station= st[0]
+        stats.station= st_temp
         stats.channel= ch
         # create and process trace
         tr = Trace(data=disp[:, ich], header=stats)
         tr.filter('bandpass',freqmin=.01,freqmax=5)
         tr.resample(20.)
         tr.trim(starttime,endtime)
-
+        tr.stats.sac.depmin = tr.data.min()
+        tr.stats.sac.depmax = tr.data.max()
         # tr.stats.starttime=tr.stats.starttime+10 # coz there is a 10 sec delay????!!!!!!!!!!!
         # tr.stats.endtime=tr.stats.endtime+10
 
         # tr = tr.slice(UTCDateTime(0.), UTCDateTime(1800.))
         # create sac from trace
         sac = SACTrace.from_obspy_trace(tr)
-        st_temp = st[0].replace('la', 'L').replace('lo', 'L')
-        sac.write(st_dir + '/sac_bf/%s.%s.%s.sac' % (st[1], st_temp, ch))
+
+        sac.write(st_dir + '/sac_bf/%s.%s.sac' % (st_temp, ch))
 
         if add_noise:
             max_amplitude = np.max(np.abs(tr.data))
-            noise_std = 0.05 * max_amplitude
+            noise_std = 0.1 * max_amplitude
 
             # Gaussian noise
             noise = np.random.normal(0, noise_std, len(tr.data))
             # Add the noise to the trace
             tr.data += noise
             sac = SACTrace.from_obspy_trace(tr)
-            st_temp = st[0].replace('la', 'L').replace('lo', 'L')
 
-            sac.write(st_dir + '/sac_bf_noise/%s.%s.%s.sac' % (st[1], st_temp, ch))
+            sac.write(st_dir + '/sac_bf_noise/%s.%s.sac' % (st_temp, ch))
 
     # sys.exit()
 print('Done with %d stations.' % len(info_arr))
