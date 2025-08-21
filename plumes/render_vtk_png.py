@@ -1,3 +1,4 @@
+#NOT THE SCRIPT TO USE. USE ONE INSIDE 'create_mov'
 # run this through terminal
 # pvbatch render_vtk_png.py
 from paraview.simple import *

@@ -18,12 +18,11 @@ from obspy.taup import TauPyModel
 from matplotlib import ticker
 from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 ########
-input_dir='/Users/keyser/Research/axisem_related_projs/plumes/output_10sec_new_source/input'
+input_dir='/Users/keyser/Research/axisem_related_projs/plumes/plumes_iaspi91_10sec_new_loc_with_wave/input'
 
 
-plume_syn = '/Users/keyser/Research/axisem_related_projs/plumes/output_10sec_new_source/stations/100KM_sts/sac_bf_noise/'
-no_plume_syn = '/Users/keyser/Research/axisem_related_projs/plumes/no_plume_10sec/output/stations/no_plume/sac_bf_noise/'
-
+plume_syn = '/Users/keyser/Research/axisem_related_projs/plumes/plumes_iaspi91_10sec_new_loc_with_wave/simu1D/output/stations/plume_2lat/sac_bf/'
+no_plume_syn = '/Users/keyser/Research/axisem_related_projs/plumes/plumes_iaspi91_10sec_new_loc_wave_disabled/simu1D/output/stations/plume_2lat/sac_bf/'
 
 info_5deg = np.loadtxt(input_dir+'/grid_stations.txt', dtype=str, skiprows=3)
 
@@ -39,15 +38,22 @@ no_plume_all=Stream()
 
 # row 2 is lat. row 3 is long.
 lats=(5,15)
+lats=(5,)
 lons=(5,15)
+lons=(5,)
 stations_subset = np.array([
     row for row in info_5deg
     if float(row[2]) in lats and float(row[3]) in lons
 ])
 # if float(row[2]) == 15 and float(row[3]) == 15
 for row in stations_subset:
-    row[0] = row[0].replace('la', 'L').replace('lo', 'L')
-stations_subset=np.delete(stations_subset, 2,axis=0)
+    row[0] = row[0].replace('la', '').replace('lo', '')
+    # row[0] = row[0].replace('L', '')
+
+# stations_subset=np.delete(stations_subset, 2,axis=0)
+# to plot just one trace
+# stations_subset=np.delete(stations_subset, 1,axis=0)
+# stations_subset=np.delete(stations_subset, 1,axis=0)
 
 print('lenth of stations_subset=',len(stations_subset))
 # print(stations_subset)
@@ -56,8 +62,8 @@ for ist, st in enumerate(stations_subset):
     print('%d / %d' % (ist + 1, len(info_5deg)), end='\r')
     st_name=st[0]
     # st_name='MCK'
-    no_st_plume=read(no_plume_syn+'*{}.Z.sac'.format(st_name))
-    st_plume=read(plume_syn+'*{}.*Z.sac'.format(st_name))
+    no_st_plume=read(no_plume_syn+'{}.Z.sac'.format(st_name))
+    st_plume=read(plume_syn+'{}.Z.sac'.format(st_name))
     no_st_plume[0].stats.station=st_name
     st_plume[0].stats.station=st_name
 
@@ -103,8 +109,10 @@ print(st_temp,'\n')
 print('################################')
 
 ax.set_ylim(4, 0)
+# ax.set_ylim(2, 0)
+
 ax.set_xlim(0,320)
-ax.set_yticks(np.linspace(0,4,5))
+# ax.set_yticks(np.linspace(0,4,5))
 ax.tick_params(axis='y',left=False,pad=1)
 # ax.yaxis.labelpad = -12
 ax.grid(which='major', axis='x',color='dimGrey', linestyle='--',linewidth=.5,alpha=.95)
@@ -112,11 +120,11 @@ ax.xaxis.set_minor_locator(MultipleLocator(10))
 ax.xaxis.set_major_locator(MultipleLocator(50))
 # ax.annotate('Vertical ACF AEB09', xy=(.6, 1.05), xycoords='axes fraction')
 # stack_ax1=iris_all[:17]
-for i in range(len(st_temp)):
+for i,auto in enumerate(st_temp):
     auto=st_temp[i]
     model = TauPyModel(model="ak135")
     # for synthetic, dep is in km. In iris, it is in mt.
-    arrivals = model.get_travel_times(source_depth_in_km=auto.stats.sac['evdp']/1000,distance_in_degree=auto.stats.sac['gcarc'],phase_list=("P","pP","sP",'pS'))
+    arrivals = model.get_travel_times(source_depth_in_km=auto.stats.sac['evdp']/1000,distance_in_degree=auto.stats.sac['gcarc'],phase_list=("P","pP","sP",'pS','S','SP','PS'))
     arr_P=arrivals[0]
     # try:
     #     arrivals = model.get_travel_times(source_depth_in_km=auto.stats.sac['evdp']/1000,distance_in_degree=auto.stats.sac['gcarc'],phase_list=["P"])
@@ -126,7 +134,7 @@ for i in range(len(st_temp)):
     # except:
     #     print("P shadow zone reached!\n")
 
-    auto.trim(starttime=origin_time+arr_P.time-20,endtime=origin_time+arr_P.time+300)
+    auto.trim(starttime=origin_time+arr_P.time-50)#,endtime=origin_time+arr_P.time+300)
 
     if auto.stats.npts == 0:
         print('No samples in trace\n')
@@ -137,7 +145,9 @@ for i in range(len(st_temp)):
     auto.data /= np.max(np.abs(auto.data))
     l1,=ax.plot(time,auto.data*.6 + i+1,  lw=0.95, color='teal',ls='--',label='real')
     for arr in arrivals:
-        ax.scatter(arr.time - arr_P.time+20, i+1,s=10,marker='o',facecolor='navy', edgecolor='black',alpha=.95,linewidth=.15,zorder=10)
+        ax.scatter(arr.time - arr_P.time+50, i+1,s=10,marker='o',facecolor='navy', edgecolor='black',alpha=.95,linewidth=.15,zorder=10)
+        ax.text(arr.time - arr_P.time+50, i+1.5, arr.name, bbox={'facecolor': 'white', 'alpha': 0.85, 'pad': 1.5},fontsize=9.5,c='navy', rotation='vertical',ha='center')
+
 
     ####
     ##plotting synthetic on top

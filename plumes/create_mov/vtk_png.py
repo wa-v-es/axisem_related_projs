@@ -1,4 +1,4 @@
-#magick -delay 80 -quiet -quality 50 -loop 0 *.png out.gif
+#magick -delay 10 -quiet -quality 50 -loop 0 *.png slice0_no_p.gif
 #pvpython
 from paraview.simple import *
 import os
@@ -6,8 +6,8 @@ import sys
 import re
 
 # Filename stuff
-vtk_dir = "../plumes_iaspi91_10sec_new_loc_with_wave/simu1D/output/elements/orthogonal_azimuthal_slices/vtk/slice3/"
-output_dir = "../plumes_iaspi91_10sec_new_loc_with_wave/simu1D/output/elements/orthogonal_azimuthal_slices/vtk_pngs/slice3/"
+vtk_dir = "../plumes_iaspi91_10sec_new_loc_wave_disabled/simu1D/output/elements/orthogonal_azimuthal_slices/vtk/slice2/"
+output_dir = "../plumes_iaspi91_10sec_new_loc_wave_disabled/simu1D/output/elements/orthogonal_azimuthal_slices/vtk_pngs/slice2_/"
 os.makedirs(output_dir, exist_ok=True)
 # path_to_vtk  = '/Users/eaton/Downloads/'
 wave_id      = 100
@@ -40,14 +40,14 @@ for i, vtk_file in enumerate(vtk_files[::15]):
     wave100vtkDisplay = Show(wave100vtk, rv, 'UnstructuredGridRepresentation')
 
     # Adjust the camera to be orthogonal to slice
-    # rv.ResetActiveCameraToPositiveY()# slice0,2
-    rv.ResetActiveCameraToPositiveX()# slice1,3
+    rv.ResetActiveCameraToPositiveY()# slice0,2
+    # rv.ResetActiveCameraToPositiveX()# slice1,3
 
     rv.ResetCamera(False, 0.9) # slice0
     wave100vtkDisplay = Show(wave100vtk, rv, 'UnstructuredGridRepresentation')
 
     # Change colourbar limits
-    vmax = 5e-9
+    vmax = 3e-9
     vmin = -vmax
     uZLUT = GetColorTransferFunction('UZ')
     uZLUT.RescaleTransferFunction(vmin, vmax)
