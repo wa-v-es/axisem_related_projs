@@ -38,9 +38,9 @@ no_plume_all=Stream()
 
 # row 2 is lat. row 3 is long.
 lats=(5,15)
-lats=(5,)
+# lats=(5,)
 lons=(5,15)
-lons=(5,)
+# lons=(5,)
 stations_subset = np.array([
     row for row in info_5deg
     if float(row[2]) in lats and float(row[3]) in lons
@@ -50,7 +50,7 @@ for row in stations_subset:
     row[0] = row[0].replace('la', '').replace('lo', '')
     # row[0] = row[0].replace('L', '')
 
-# stations_subset=np.delete(stations_subset, 2,axis=0)
+stations_subset=np.delete(stations_subset, 2,axis=0)
 # to plot just one trace
 # stations_subset=np.delete(stations_subset, 1,axis=0)
 # stations_subset=np.delete(stations_subset, 1,axis=0)
@@ -62,8 +62,8 @@ for ist, st in enumerate(stations_subset):
     print('%d / %d' % (ist + 1, len(info_5deg)), end='\r')
     st_name=st[0]
     # st_name='MCK'
-    no_st_plume=read(no_plume_syn+'{}.Z.sac'.format(st_name))
-    st_plume=read(plume_syn+'{}.Z.sac'.format(st_name))
+    no_st_plume=read(no_plume_syn+'{}.R.sac'.format(st_name))
+    st_plume=read(plume_syn+'{}.R.sac'.format(st_name))
     no_st_plume[0].stats.station=st_name
     st_plume[0].stats.station=st_name
 
@@ -78,8 +78,8 @@ for ist, st in enumerate(stations_subset):
     arr_P=arrivals[0]
 
     # st_syn.trim(starttime=origin_time+arr_PP.time-400,endtime=origin_time+arr_PP.time+200)
-    no_st_plume.filter('lowpass',freq=.1)
-    st_plume.filter('lowpass',freq=.1)
+    no_st_plume.filter('lowpass',freq=.2)
+    st_plume.filter('lowpass',freq=.2)
     # st_iris[0].data=st_iris[0].data
     stream_both = Stream(traces=[no_st_plume[0], st_plume[0]])
     no_plume_all.append(no_st_plume[0])
@@ -111,8 +111,8 @@ print('################################')
 ax.set_ylim(4, 0)
 # ax.set_ylim(2, 0)
 
-ax.set_xlim(0,320)
-# ax.set_yticks(np.linspace(0,4,5))
+ax.set_xlim(0,450)
+ax.set_yticks(np.linspace(0,4,5))
 ax.tick_params(axis='y',left=False,pad=1)
 # ax.yaxis.labelpad = -12
 ax.grid(which='major', axis='x',color='dimGrey', linestyle='--',linewidth=.5,alpha=.95)
@@ -146,13 +146,13 @@ for i,auto in enumerate(st_temp):
     l1,=ax.plot(time,auto.data*.6 + i+1,  lw=0.95, color='teal',ls='--',label='real')
     for arr in arrivals:
         ax.scatter(arr.time - arr_P.time+50, i+1,s=10,marker='o',facecolor='navy', edgecolor='black',alpha=.95,linewidth=.15,zorder=10)
-        ax.text(arr.time - arr_P.time+50, i+1.5, arr.name, bbox={'facecolor': 'white', 'alpha': 0.85, 'pad': 1.5},fontsize=9.5,c='navy', rotation='vertical',ha='center')
+        ax.text(arr.time - arr_P.time+50, i+.5, arr.name, bbox={'facecolor': 'white', 'alpha': 0.85, 'pad': 1.5},fontsize=9.5,c='navy', rotation='vertical',ha='center')
 
 
     ####
     ##plotting synthetic on top
     auto_s=plume_all.select(station=auto.stats.station)[0]
-    auto_s.trim(starttime=origin_time+arr_P.time-20,endtime=origin_time+arr_P.time+300)
+    auto_s.trim(starttime=origin_time+arr_P.time-50)#,endtime=origin_time+arr_P.time+300)
 
     time_s = np.arange(auto_s.stats.npts) * auto_s.stats.delta
     ### ADDED 10 sec in synthetic!!!!!!
