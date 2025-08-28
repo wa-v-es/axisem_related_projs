@@ -21,8 +21,8 @@ from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
 input_dir='/Users/keyser/Research/axisem_related_projs/plumes/plumes_iaspi91_10sec_new_loc_with_wave/input'
 
 
-plume_syn = '/Users/keyser/Research/axisem_related_projs/plumes/plumes_iaspi91_10sec_new_loc_with_wave/simu1D/output/stations/plume_2lat/sac_bf/'
-no_plume_syn = '/Users/keyser/Research/axisem_related_projs/plumes/plumes_iaspi91_10sec_new_loc_wave_disabled/simu1D/output/stations/plume_2lat/sac_bf/'
+plume_syn = '/Users/keyser/Research/axisem_related_projs/plumes/plumes_iaspi91_10sec_new_loc_src_wave/simu1D/output/stations/plume_2lat/sac_bf/'
+no_plume_syn = '/Users/keyser/Research/axisem_related_projs/plumes/plumes_iaspi91_10sec_new_loc_src_wave_disable/simu1D/output/stations/plume_2lat/sac_bf/'
 
 info_5deg = np.loadtxt(input_dir+'/grid_stations.txt', dtype=str, skiprows=3)
 
@@ -98,7 +98,7 @@ plume_all = Stream(sorted(plume_all, key=lambda tr: tr.stats.sac['gcarc']))
 plt.ion()
 plt.rcParams['font.size'] = 12
 
-fig, ax = plt.subplots(1,1, dpi=150,figsize=(12, 4))
+fig, ax = plt.subplots(1,1, dpi=150,figsize=(15, 4))
 
 origin_time = get_sac_reftime(no_plume_all[0].stats.sac)
 
@@ -111,7 +111,8 @@ print('################################')
 ax.set_ylim(4, 0)
 # ax.set_ylim(2, 0)
 
-ax.set_xlim(0,450)
+# ax.set_xlim(0,450)
+ax.set_xlim(250,800)
 ax.set_yticks(np.linspace(0,4,5))
 ax.tick_params(axis='y',left=False,pad=1)
 # ax.yaxis.labelpad = -12
@@ -134,7 +135,7 @@ for i,auto in enumerate(st_temp):
     # except:
     #     print("P shadow zone reached!\n")
 
-    auto.trim(starttime=origin_time+arr_P.time-50)#,endtime=origin_time+arr_P.time+300)
+    # auto.trim(starttime=origin_time+arr_P.time-50)#,endtime=origin_time+arr_P.time+300)
 
     if auto.stats.npts == 0:
         print('No samples in trace\n')
@@ -145,14 +146,14 @@ for i,auto in enumerate(st_temp):
     auto.data /= np.max(np.abs(auto.data))
     l1,=ax.plot(time,auto.data*.6 + i+1,  lw=0.95, color='teal',ls='--',label='real')
     for arr in arrivals:
-        ax.scatter(arr.time - arr_P.time+50, i+1,s=10,marker='o',facecolor='navy', edgecolor='black',alpha=.95,linewidth=.15,zorder=10)
-        ax.text(arr.time - arr_P.time+50, i+.5, arr.name, bbox={'facecolor': 'white', 'alpha': 0.85, 'pad': 1.5},fontsize=9.5,c='navy', rotation='vertical',ha='center')
-
+        ax.scatter(arr.time, i+1,s=10,marker='o',facecolor='navy', edgecolor='black',alpha=.95,linewidth=.15,zorder=10)
+        ax.text(arr.time, i+.5, arr.name, bbox={'facecolor': 'white', 'alpha': 0.85, 'pad': 1.5},fontsize=9.5,c='navy', rotation='vertical',ha='center')
+    # was arr.time - arr_P.time+50
 
     ####
     ##plotting synthetic on top
     auto_s=plume_all.select(station=auto.stats.station)[0]
-    auto_s.trim(starttime=origin_time+arr_P.time-50)#,endtime=origin_time+arr_P.time+300)
+    # auto_s.trim(starttime=origin_time+arr_P.time-50)#,endtime=origin_time+arr_P.time+300)
 
     time_s = np.arange(auto_s.stats.npts) * auto_s.stats.delta
     ### ADDED 10 sec in synthetic!!!!!!
@@ -179,11 +180,11 @@ ax.yaxis.set_major_formatter(ticker.FixedFormatter(st_label))
 
 # ax[1].set_xlabel('Time after eq (s)')
 plt.legend([l1,l2],['No plume','Plume'], loc=[.65,1.02],ncol=3,fontsize=12,handletextpad=.5,borderaxespad=1.5,columnspacing=1)
-fig.text(0.42, .92, 'Centered around P-20 lowpass (0.1 Hz )',fontsize=12, ha='center', va='center')
+fig.text(0.42, .92, 'R Lowpass 0.2 Hz',fontsize=12, ha='center', va='center')
 fig.text(0.5, .01, 'Time (s)',fontsize=12, ha='center', va='center')
 
 plt.show()
 #
-# plt.savefig('3seis_noise_plume_noPlume_10mesh_Z_10s.png',dpi=300,bbox_inches='tight', pad_inches=0.1)
+# plt.savefig('3seis_plume_noPlume_10mesh_Z_new_src.png',dpi=300,bbox_inches='tight', pad_inches=0.1)
 sys.exit()
 ############

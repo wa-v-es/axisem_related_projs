@@ -17,7 +17,7 @@ from obspy.io.sac import SACTrace
 # read event location
 input_dir='/Users/keyser/Research/axisem_related_projs/plumes/input'
 input_dir='/Users/keyser/Research/axisem_related_projs/plumes/no_plume_10sec/input'
-input_dir='/Users/keyser/Research/axisem_related_projs/plumes/plumes_iaspi91_5sec_new_loc/input'
+input_dir='/Users/keyser/Research/axisem_related_projs/plumes/plumes_iaspi91_10sec_new_loc_src_wave_disable/input'
 
 #nanvar contains 0N17E 10N13E 10N16E 11N17E 12N17E 1N17E 2N16E 2N17E 2N18E 3N18E 4N17E
 # 5N16E 5N17E 6N15E 6N16E 6N17E 7N15E 7N16E 7N17E 8N15E 9N15E 9N16E
@@ -27,7 +27,7 @@ info_arr = np.loadtxt(input_dir+'/grid_stations.txt', dtype=str, skiprows=3)
 # st_dir = '/Users/keyser/Research/axisem/loyalty_isl/output_10sec_2HD/stations/AK_81'
 st_dir = '/Users/keyser/Research/axisem_related_projs/plumes/output_10sec_new_source/stations/100KM_sts'
 st_dir = '/Users/keyser/Research/axisem_related_projs/plumes/no_plume_10sec/output/stations/no_plume'
-st_dir = '/Users/keyser/Research/axisem_related_projs/plumes/plumes_iaspi91_5sec_new_loc/simu1D/output/stations/plume_5sec'
+st_dir = '/Users/keyser/Research/axisem_related_projs/plumes/plumes_iaspi91_10sec_new_loc_src_wave_disable/simu1D/output/stations/plume_2lat'
 
 
 
@@ -97,12 +97,12 @@ for ist, st in enumerate(info_arr):
         print('no P')
 
     # starttime=stats.starttime+arr_P.time-60 #stats.starttime+200
-    starttime=stats.starttime+200 #stats.starttime+200
+    starttime=stats.starttime #stats.starttime+200
 
     endtime=stats.endtime
     # sys.exit()
     # sac header
-    sac_header['b'] = 200
+    sac_header['b'] = 0
     sac_header['kstnm'] = st_temp
     sac_header['knetwk'] = st[1]
     sac_header['stla'] = float(st[2])
