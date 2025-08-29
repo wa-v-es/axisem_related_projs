@@ -15,21 +15,21 @@ import netCDF4 as nc
 
 
 # We dont need to make a model that spans the whole domain, just the part we are interested in injecting a plume in:
-radius = 2800000
+radius = 6400000
 perturb = -0.1
-lat_lim = [-50, 50]
-long_lim = [-50, 50]
+lat_lim = [-20, 20]
+long_lim = [-20, 20]
 depth_lim = [0, radius]
 
 # Set locations for shapes:
-ell_loc = [0,0, 400000] # orignally was 1200km.
-cyl_loc = [0,0, 2200000] # [x,y,z] of centre of cylinder
+ell_loc = [0,0, 500000] # orignally was 1200km.
+cyl_loc = [0,0, 1900000] # [x,y,z] of centre of cylinder
 # sys.exit()
 # Create our global model:
 glob_m = Model("spherical", lat_lim, long_lim, depth_lim, elements_per_wavelength=1, dominant_freq=.5, min_velocity=10000, oversaturation=1, a=radius)
 
 # Create cylinder: [h, rad, theta, phi, expand_int] where h - length of the cylinder, radius of the cylinder, theta and phi are rotation angles away from the major axis.
-cylinder = Cylinder(model=glob_m, vp=perturb, vs=perturb, rho=perturb, dim=[2500000, 300000, 0, 0, 1], loc=cyl_loc, major_axis='Z')
+cylinder = Cylinder(model=glob_m, vp=perturb, vs=perturb, rho=perturb, dim=[1800000, 250000, 0, 0, 1], loc=cyl_loc, major_axis='Z')
 
 # Create ellipse:
 ellipse = Ellipsoid(model=glob_m, vp=perturb, vs=perturb, rho=perturb, dim=[500000, 500000, 500000, np.pi/2, 0, 1], loc=ell_loc)
@@ -46,7 +46,7 @@ glob_m.bm_vp =  sci.gaussian_filter(input=glob_m.bm_vp, sigma=sigma)
 glob_m.bm_vs =  sci.gaussian_filter(input=glob_m.bm_vs, sigma=sigma)
 
 # Write to NetCDF file
-out_path = f"plume_{sigma}"
+out_path = f"plume_full_{sigma}"
 glob_m.writeNetCDF(f"{out_path}mantle.nc")
 
 
